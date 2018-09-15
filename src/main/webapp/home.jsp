@@ -32,7 +32,6 @@
 %>
 
 <p><a href="<%= userService.createLoginURL(request.getRequestURI()) %>" class="button">Login</a></p>
-
 <%
     }
 	ObjectifyService.register(RecipeMatch.class);
@@ -40,7 +39,7 @@
 	
 	if (recipeMatches.isEmpty()) {
 		%>
-		
+		<p><a href="http://localhost:8080/recipematch.jsp" class="button">Find me a recipe</a></p>
 		<p>Website '${fn:escapeXml(websiteTitle)}' has no recipe matches.</p>
 		
 		<%
