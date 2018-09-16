@@ -17,7 +17,6 @@ public class RecipeMatch {
 	@Index User user;
 	@Index List<String> itemList;
 	@Index Integer numMatches;
-	@Index String results;
 	
 	private RecipeMatch() {}
 	
@@ -26,7 +25,6 @@ public class RecipeMatch {
 		this.itemList = itemList;
 		this.websiteName = Key.create(Website.class, websiteName);
 		this.numMatches = 0;
-		this.results = "";
 	}
 	
 	public User getUser() {
@@ -48,13 +46,7 @@ public class RecipeMatch {
 	public Integer getNumMatches() {
 		return numMatches;
 	}
-	
-	public void determineMatches() {
-		RecipeAPIMatcher matcher = new RecipeAPIMatcher();
-		this.results = matcher.getRecipeMatches(getItemList());
-	}
-	
-	public String getResults() {
-		return results;
-	}
+
 }
+
+

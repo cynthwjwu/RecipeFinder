@@ -16,6 +16,7 @@ public class RecipeMatchServlet extends HttpServlet {
 	}
 	
 	static {
+		ObjectifyService.register(RecipeResult.class);
 		ObjectifyService.register(RecipeMatch.class);
 	}
 }

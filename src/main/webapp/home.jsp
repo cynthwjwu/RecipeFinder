@@ -5,6 +5,7 @@
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
 <%@ page import="com.googlecode.objectify.*" %>
 <%@ page import="recipefinder.RecipeMatch" %>
+<%@ page import="recipefinder.RecipeResult" %>
 <%@ page import="java.util.Collections" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
@@ -18,7 +19,7 @@
   </header>
   
   <body>
-  <p><a href="http://localhost:8080/recipematch.jsp" class="button">Find me a recipe</a></p>
+  <p><a href="http://recipefinder-hackmit.appspot.com/recipematch.jsp" class="button">Find me a recipe</a></p>
 <%
     UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();
@@ -35,7 +36,11 @@
 <%
     }
 	ObjectifyService.register(RecipeMatch.class);
+	ObjectifyService.register(RecipeResult.class);
 	List<RecipeMatch> recipeMatches = ObjectifyService.ofy().load().type(RecipeMatch.class).list();
+	List<RecipeResult> recipeResults = ObjectifyService.ofy().load().type(RecipeResult.class).list();
+	
+	Collections.sort(recipeResults, Collections.reverseOrder());
 	
 	if (recipeMatches.isEmpty()) {
 		%>
@@ -44,30 +49,17 @@
 		<%
 	} else {
 		
-		for (RecipeMatch recipeMatch : recipeMatches) {
+		for (int i = 0; i < 10; i++) {
+			RecipeResult recipeResult = recipeResults.get(i);
 			%>
 			<div class="box">
 				<%
-				if (recipeMatch.getItemList() != null) {
-					pageContext.setAttribute("num_matches", recipeMatch.getNumMatches());
-					pageContext.setAttribute("results", recipeMatch.getResults());
-					for (String item : recipeMatch.getItemList()) {
-						pageContext.setAttribute("req_item", item);
-						%>
-						<blockquote>${fn:escapeXml(req_item)}</blockquote>
-					<%
-					}
-					%>
-					<blockquote>${fn:escapeXml(num_matches)}</blockquote>
-					<blockquote>${fn:escapeXml(results)}</blockquote>
-				<%
-				} else {
-					pageContext.setAttribute("req_item", "None");
-					%>
-					<blockquote>${fn:escapeXml(req_item)}</blockquote>
-					<%
-				}
-				%>
+				pageContext.setAttribute("recipe_title", recipeResult.getTitle());
+				pageContext.setAttribute("recipe_url", recipeResult.getURL());
+				pageContext.setAttribute("image_url", recipeResult.getImageURL());
+			%>
+				<blockquote><a href="${fn:escapeXml(recipe_url)}">${fn:escapeXml(recipe_title)}</a></blockquote>
+				<img src="${fn:escapeXml(image_url)}"/>
 				
 			</div>
 			<br>

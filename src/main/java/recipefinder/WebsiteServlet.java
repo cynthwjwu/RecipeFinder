@@ -30,11 +30,16 @@ public class WebsiteServlet extends HttpServlet {
 		
 		// get recipe match
 		RecipeMatch recipeMatch = new RecipeMatch(user, itemList, websiteTitle);
-		recipeMatch.calcNumMatches();
-		recipeMatch.determineMatches();
+		RecipeAPIMatcher resultMatcher = new RecipeAPIMatcher(recipeMatch);
+		List<RecipeResult> results = resultMatcher.getRecipeMatches();
 		
 		// chuck the recipe request into Objectify
 		ofy().save().entity(recipeMatch).now();
+		
+		for (RecipeResult r : results) {
+			ofy().save().entity(r).now();
+		}
+		ofy().clear();
 		
 		// send response to ofyguestbook.jsp
 		//blog.jsp
@@ -43,6 +48,7 @@ public class WebsiteServlet extends HttpServlet {
 	
 	static {
 		ObjectifyService.register(RecipeMatch.class);
+		ObjectifyService.register(RecipeResult.class);
 	}
 
 }

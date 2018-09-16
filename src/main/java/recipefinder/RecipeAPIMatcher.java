@@ -6,23 +6,46 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class RecipeAPIMatcher {
-	public RecipeAPIMatcher() {}
+	RecipeMatch recipeMatch;
+	
+	public RecipeAPIMatcher(RecipeMatch recipeMatch) {
+		this.recipeMatch = recipeMatch;
+	}
 	
 	/*
 	 * Do the actual matching between ingredients and recipes
 	 */
-	public String getRecipeMatches(List<String> itemList) {
-		List<String> matches = new ArrayList<>();
-		String reqUrl = getURL(itemList);
+	public List<RecipeResult> getRecipeMatches() {
+		List<RecipeResult> results = new ArrayList<>();
+		String reqUrl = getURL(recipeMatch.getItemList());
 		String jsonResp = getHTTPData(reqUrl); //json response returned by api call
 		
-		//parse response
-		//add recipe name + links + etc to list
+		JsonParser parser = new JsonParser();
+		try {
+			JsonElement jsonTree = parser.parse(jsonResp);
+			JsonObject obj = jsonTree.getAsJsonObject();
+			JsonArray recipeArray = (JsonArray) obj.get("recipes");
+			for (int i = 0; i < 10; i++) {
+				JsonElement recipeArrayObj = recipeArray.get(i);
+				JsonObject recipes = recipeArrayObj.getAsJsonObject();
+				JsonElement recipeTitle = recipes.get("title");
+				JsonElement recipeURL = recipes.get("source_url");
+				JsonElement imageURL = recipes.get("image_url");
+				results.add(new RecipeResult(recipeTitle.getAsString(), recipeURL.getAsString(), imageURL.getAsString()));
+			}
+		} catch(Exception e) {
+			
+		}
 		
-
-		return jsonResp;
+		return results;
 	}
+	
 	
 	/*
 	 * Create URL based on input ingredients
