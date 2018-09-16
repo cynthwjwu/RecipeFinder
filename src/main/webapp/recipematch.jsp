@@ -32,9 +32,9 @@
       pageContext.setAttribute("user", user);
 %>
 
-<form action="/recipefinder/home" method="post">
-	<p>Items</p>
-	<div><textarea name="items" rows="3" cols="60"></textarea></div>
+<form action="/website/home" method="post">
+	<p>Input items, separate by a comma</p>
+	<div><textarea name="item" rows="3" cols="60"></textarea></div>
 	<br>
 	<div><input type="submit" value="Match Me" class="button"/></div>
 	<input type="hidden" name="websiteTitle" value="${fn:escapeXml(websiteTitle)}"/>

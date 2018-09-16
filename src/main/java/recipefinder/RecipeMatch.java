@@ -1,5 +1,8 @@
 package recipefinder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
@@ -12,21 +15,46 @@ public class RecipeMatch {
 	@Parent Key<Website> websiteName;
 	@Id Long id;
 	@Index User user;
-	@Index String item;
+	@Index List<String> itemList;
+	@Index Integer numMatches;
+	@Index String results;
 	
 	private RecipeMatch() {}
 	
-	public RecipeMatch(User user, String item, String websiteName) {
+	public RecipeMatch(User user, List<String> itemList, String websiteName) {
 		this.user = user;
-		this.item = item;
+		this.itemList = itemList;
 		this.websiteName = Key.create(Website.class, websiteName);
+		this.numMatches = 0;
+		this.results = "";
 	}
 	
 	public User getUser() {
 		return user;
 	}
 	
-	public String getItem() {
-		return item;
+	public List<String> getItemList() {
+		return itemList;
+	}
+	
+	public void calcNumMatches() {
+		for (String ingredient : getItemList()) {
+			if (ingredient.equalsIgnoreCase("apple")) {
+				this.numMatches++;
+			}
+		}
+	}
+	
+	public Integer getNumMatches() {
+		return numMatches;
+	}
+	
+	public void determineMatches() {
+		RecipeAPIMatcher matcher = new RecipeAPIMatcher();
+		this.results = matcher.getRecipeMatches(getItemList());
+	}
+	
+	public String getResults() {
+		return results;
 	}
 }

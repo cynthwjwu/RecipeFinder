@@ -3,6 +3,9 @@ package recipefinder;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,14 +23,17 @@ public class WebsiteServlet extends HttpServlet {
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
 		
-		// get content from the request
+		// get item list from the request
 		String websiteTitle = req.getParameter("websiteTitle");
 		String item = req.getParameter("item");
+		List<String> itemList = Arrays.asList(item.split(","));
 		
-		// create a new greeting
-		RecipeMatch recipeMatch = new RecipeMatch(user, item, websiteTitle);
+		// get recipe match
+		RecipeMatch recipeMatch = new RecipeMatch(user, itemList, websiteTitle);
+		recipeMatch.calcNumMatches();
+		recipeMatch.determineMatches();
 		
-		// chuck the greeting into Objectify
+		// chuck the recipe request into Objectify
 		ofy().save().entity(recipeMatch).now();
 		
 		// send response to ofyguestbook.jsp
